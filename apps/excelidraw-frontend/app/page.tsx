@@ -1,6 +1,14 @@
+"use client"
 import { Pencil, Zap, Users, Download, Share2, Layers } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 export default function App() {
+  const router = useRouter();
+
+  function navigateToSignin(){
+    router.push("/auth/signin");
+  }
+
   return (
     <div className="min-h-screen bg-linear-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
       <nav className="container mx-auto px-6 py-6">
@@ -11,8 +19,7 @@ export default function App() {
           </div>
           <div className="hidden md:flex items-center space-x-8">
             <a href="#features" className="hover:text-blue-400 transition-colors">Features</a>
-            <a href="#about" className="hover:text-blue-400 transition-colors">About</a>
-            <button className="bg-blue-500 hover:bg-blue-600 px-6 py-2 rounded-lg font-semibold transition-colors">
+            <button onClick={navigateToSignin} className="bg-blue-500 hover:bg-blue-600 px-6 py-2 rounded-lg font-semibold transition-colors">
               Get Started
             </button>
           </div>
@@ -30,12 +37,12 @@ export default function App() {
               Simple enough for everyone, powerful enough for professionals.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="bg-blue-500 hover:bg-blue-600 px-8 py-4 rounded-lg font-semibold text-lg transition-all transform hover:scale-105 shadow-lg shadow-blue-500/50">
+              <button onClick={navigateToSignin} className="bg-blue-500 hover:bg-blue-600 px-8 py-4 rounded-lg font-semibold text-lg transition-all transform hover:scale-105 shadow-lg shadow-blue-500/50">
                 Start Drawing Now
               </button>
-              <button className="bg-gray-700 hover:bg-gray-600 px-8 py-4 rounded-lg font-semibold text-lg transition-all transform hover:scale-105">
+              {/* <button className="bg-gray-700 hover:bg-gray-600 px-8 py-4 rounded-lg font-semibold text-lg transition-all transform hover:scale-105">
                 View Examples
-              </button>
+              </button> */}
             </div>
           </div>
         </section>
