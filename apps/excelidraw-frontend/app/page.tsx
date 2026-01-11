@@ -1,13 +1,31 @@
 "use client"
+import { useEffect, useState } from 'react';
 import { Pencil, Zap, Users, Download, Share2, Layers } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 export default function App() {
   const router = useRouter();
+  const [userStatus, setUserStatus] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   function navigateToSignin(){
-    router.push("/auth/signin");
+    if(userStatus){
+      router.push("/create-room")
+    }else{
+      router.push("/auth/signin");
+    }
   }
+
+  useEffect(() => {
+    setIsLoading(true);
+    const status = localStorage.getItem('status');
+    if(status=== "true") setUserStatus(true);
+    setIsLoading(false)
+  }, []) 
+
+  if(isLoading) return (
+    <p>Loading...</p>
+  )
 
   return (
     <div className="min-h-screen bg-linear-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
@@ -17,11 +35,11 @@ export default function App() {
             <Pencil className="w-8 h-8 text-blue-400" />
             <span className="text-2xl font-bold">Excelidraw</span>
           </div>
-          <div className="hidden md:flex items-center space-x-8">
+          <div className="md:flex items-center space-x-8">
             <a href="#features" className="hover:text-blue-400 transition-colors">Features</a>
-            <button onClick={navigateToSignin} className="bg-blue-500 hover:bg-blue-600 px-6 py-2 rounded-lg font-semibold transition-colors">
+            {!isLoading && !userStatus && <button onClick={navigateToSignin} className="bg-blue-500 hover:bg-blue-600 px-6 py-2 rounded-lg font-semibold transition-colors">
               Get Started
-            </button>
+            </button>}
           </div>
         </div>
       </nav>

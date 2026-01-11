@@ -1,18 +1,7 @@
 'use client'
 import { ChangeEvent, FormEvent, useState, useEffect } from "react";
 import axios from "axios";
-
-interface SigninUser {
-    email: String,
-    password: String,
-}
-interface SignupUser {
-    email: String,
-    username: String,
-    password: String,
-    name: String
-}
-
+import { useRouter } from "next/navigation";
 interface FormData {
     name?: string;
     email?: string;
@@ -33,12 +22,7 @@ interface AuthPageProps {
 
 export default function AuthPage({ isSignup }: AuthPageProps) {
     const [isDarkMode, setIsDarkMode] = useState(false);
-    
-    // Check for system preference on component mount
-    useEffect(() => {
-        const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        setIsDarkMode(isDark);
-    }, []);
+    const router = useRouter();
 
     const [formData, setFormData] = useState<FormData>({
         name: "",
@@ -77,6 +61,16 @@ export default function AuthPage({ isSignup }: AuthPageProps) {
             newErrors.name = "Full name is required";
         } else if (isSignup && formData.name && formData.name.trim().length < 2) {
             newErrors.name = "Name must be at least 2 characters";
+        }
+
+        // Username validation
+        const usernameRegex = /^[a-zA-Z0-9]+$/;
+        if (isSignup && formData.username && !formData.username.trim()) {
+            newErrors.username = "username is required";
+        } else if (isSignup && formData.username && formData.username.trim().length < 3) {
+            newErrors.name = "username must be at least 3 characters";
+        } else if(isSignup && formData.username && usernameRegex.test(formData.username)){
+            newErrors.username = "Special characters are not allowed.";
         }
 
         // Email validation
@@ -125,9 +119,19 @@ export default function AuthPage({ isSignup }: AuthPageProps) {
         try {
             const apiUrl =  `${process.env.NEXT_PUBLIC_BACKEND_URL}/user/${isSignup?"signup":"signin"}`  
 
-            const response = axios.post(apiUrl, submitData);
+            const response = await axios.post(apiUrl, submitData);
+            
+            if(response.statusText!=="OK"){
+                throw new Error(`Error::${isSignup? "Signup":"Signin"} failed`)
+            }
+            const token = response.data.token;
+            console.log("sign",token);
+            if (typeof window !== 'undefined') {
+                localStorage.setItem('authToken', token);
+                localStorage.setItem('status', 'true');
+            }
 
-            console.log("Submitting:", response);
+            router.push("/");
 
         } catch (error) {
             console.error(`${isSignup?"Signup":"Signin"} failed:`, error);
@@ -142,8 +146,7 @@ export default function AuthPage({ isSignup }: AuthPageProps) {
             <div className="relative z-10">
                 <div className="max-w-2xl mx-auto w-full py-8 px-4">
                     <div className="relative backdrop-blur-sm rounded-xl sm:rounded-2xl shadow-xl sm:shadow-2xl border overflow-hidden transition-all duration-300  
-                            bg-linear-to-br from-gray-800/90 to-gray-900/90 border-gray-700/50
-                          
+                            bg-linear-to-br from-gray-800/90 to-gray-900/90 border-gray-700/50    
                     ">
                         {/* Header Section with Geometric Design */}
                         <div className="relative p-6 sm:p-8 md:p-10 rounded-t-xl sm:rounded-t-2xl transition-all duration-300 

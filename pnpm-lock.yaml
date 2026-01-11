@@ -36,6 +36,9 @@ importers:
         specifier: 19.2.3
         version: 19.2.3(react@19.2.3)
     devDependencies:
+      '@repo/common':
+        specifier: workspace:*
+        version: link:../../packages/common
       '@tailwindcss/postcss':
         specifier: ^4
         version: 4.1.18

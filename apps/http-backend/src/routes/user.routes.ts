@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { verifyToken } from "../middlewares/verify_token.js";
-import { CreateUserSchema, SigninSchema } from "@repo/common/types"
+import { CreateUserSchema, SigninSchema } from "../../../../packages/common/dist/validations.js"
 import { prismaClient } from "@repo/db/client";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
@@ -23,7 +23,8 @@ router.post('/signup', async (req, res) => {
         }
 
         const hashedPassword = await bcrypt.hash(data.data.password, 10);
-
+        
+        
         const user = await prismaClient.user.create({
             data: {
                 email: data.data.email,
@@ -33,8 +34,17 @@ router.post('/signup', async (req, res) => {
             }
         })
 
+        const token = jwt.sign({ userId: user.id }, JWT_SECRET);
+        res.cookie('authToken', token, {
+            httpOnly: true,    // Correct! Prevents JavaScript from reading the cookie (XSS protection)
+            secure: false,      // Cookie only sent over HTTPS
+            maxAge: 3600000,   // Expires in 1 hour (in milliseconds)
+            sameSite: 'strict' // Prevents CSRF attacks
+        });
+
         return res.json({
-            user: user
+            user: user,
+            token: token
         });
 
     } catch (error) {

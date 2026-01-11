@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { verifyToken } from "../middlewares/verify_token.js";
-import { CreateRoomSchema} from "@repo/common/types"
+import { CreateRoomSchema} from "@repo/common/validations"
 import {prismaClient} from "@repo/db/client";
 import { createSlug } from "../utils/generateSlug.js";
 
